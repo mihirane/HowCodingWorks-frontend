@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # howcodingworks
 
 > How Coding Works is a blogging website about technology and computer programming.
@@ -20,3 +21,7 @@ $ npm run generate
 ```
 
 For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
+=======
+# HowCodingWorks-frontend
+How Coding Works is a blogging website about technology and computer programming.
+>>>>>>> b22f511fe127e2adb327a2a316c7f422c64ac903
