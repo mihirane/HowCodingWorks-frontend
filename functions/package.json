@@ -36,8 +36,7 @@
     "nuxt": "^2.12.2",
     "uuid": "^8.1.0",
     "vue-client-only": "^2.0.0",
-    "vue-meta": "^2.3.4",
-    "vuetify": "^2.2.32"
+    "vue-meta": "^2.3.4"
   },
   "devDependencies": {
     "eslint": "^5.12.0",
