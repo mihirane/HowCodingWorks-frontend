@@ -72,8 +72,6 @@
 <script>
 import ClientOnly from 'vue-client-only'
 import { v4 as uuidv4 } from 'uuid'
-import postEditorViewModel from '~/viewmodel/PostEditorViewModel'
-import uploadImageToFirebase from '~/plugins/image-uploader'
 
 export default {
   name: 'PostEditor',
@@ -82,9 +80,9 @@ export default {
   components: {
     ClientOnly
   },
-  async asyncData ({ error }) {
+  async asyncData ({ app, error }) {
     try {
-      const apolloData = await postEditorViewModel.getAllTopics()
+      const apolloData = await app.$postEditorViewModel.getAllTopics()
 
       if (apolloData && apolloData.data && !apolloData.errors) {
         const topicNames = await apolloData.data.getAllTopics
@@ -101,7 +99,6 @@ export default {
         error({ statusCode: 404, message: 'Topic not found' })
       }
     } catch (errorObj) {
-      error({ statusCode: 404, message: 'Topic not found' })
       // eslint-disable-next-line
       console.log(errorObj);
     }
@@ -150,7 +147,7 @@ export default {
     async publishPost () {
       try {
         const postDescription = JSON.stringify(await this.editor.save())
-        const apolloData = await postEditorViewModel.publishPost(
+        const apolloData = await this.$postEditorViewModel.publishPost(
           this.postTopicName,
           this.postTitle,
           this.postCaption,
@@ -168,6 +165,8 @@ export default {
       }
     },
     createEditorInstance () {
+      const componentObj = this
+
       if (process.client) {
         const EditorJS = require('@editorjs/editorjs')
         // Editor.js Plugins
@@ -201,7 +200,7 @@ export default {
                 uploader: {
                   async uploadByFile (file) {
                     try {
-                      await uploadImageToFirebase(
+                      await componentObj.$uploadImageToFirebase(
                         file,
                         '/posts/' + uuidv4()
                       )

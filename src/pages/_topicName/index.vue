@@ -62,7 +62,6 @@
 </template>
 
 <script>
-import topicContainerViewModel from '~/viewmodel/TopicContainerViewModel'
 import PostCard from '~/components/PostCard'
 
 export default {
@@ -72,10 +71,10 @@ export default {
   components: {
     PostCard
   },
-  async asyncData ({ params, store, error }) {
+  async asyncData ({ app, params, store, error }) {
     try {
       if (store.state.currentUser != null) {
-        const apolloData = await topicContainerViewModel.getTopicContainerData(
+        const apolloData = await app.$topicContainerViewModel.getTopicContainerData(
           store.state.currentUser.uid,
           params.topicName
         )
@@ -91,7 +90,7 @@ export default {
           error({ statusCode: 404, message: 'Topic not found' })
         }
       } else {
-        const apolloData = await topicContainerViewModel.getTopicContainerDataWithoutUser(
+        const apolloData = await app.$topicContainerViewModel.getTopicContainerDataWithoutUser(
           params.topicName
         )
 
@@ -101,9 +100,9 @@ export default {
           throw new Error('Some error occurred in apolloData')
         }
       }
-    } catch (error) {
+    } catch (errorObj) {
       // eslint-disable-next-line
-      error({ statusCode: 404, message: "Topic not found" });
+      console.log(errorObj)
     }
   },
   computed: {
@@ -131,7 +130,7 @@ export default {
           this.$store.state.currentUser.uid &&
           this.$store.state.currentUser.uid != null
         ) {
-          const response = await topicContainerViewModel.followTopic(
+          const response = await this.$topicContainerViewModel.followTopic(
             this.$store.state.currentUser.uid,
             this.$route.params.topicName
           )
@@ -177,7 +176,7 @@ export default {
           this.$store.state.currentUser.uid &&
           this.$store.state.currentUser.uid != null
         ) {
-          const response = await topicContainerViewModel.unfollowTopic(
+          const response = await this.$topicContainerViewModel.unfollowTopic(
             this.$store.state.currentUser.uid,
             this.$route.params.topicName
           )

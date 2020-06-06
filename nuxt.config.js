@@ -35,7 +35,8 @@ module.exports = {
   ** Plugins to load before mounting the App
   */
   plugins: [
-    { src: '~/plugins/firebase', mode: 'client' }
+    '~/plugins/firebase',
+    '~/plugins/combined-inject.js'
   ],
   /*
   ** Nuxt.js dev-modules

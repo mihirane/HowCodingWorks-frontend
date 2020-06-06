@@ -1,11 +1,10 @@
 import axios from 'axios'
 import firebase from 'firebase/app'
-const env = require('~/environment/env')
 
-export default async function ({ store, error }) {
+export default async function ({ app, store, error }) {
   try {
     if (store.state.currentUser != null) {
-      const response = await axios.post(env.adminClaimsEndpoint, {
+      const response = await axios.post(app.$env.adminClaimsEndpoint, {
         uid: store.state.currentUser.uid
       })
 

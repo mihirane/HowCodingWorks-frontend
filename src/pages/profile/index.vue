@@ -42,7 +42,6 @@
 <script>
 import PostCard from '~/components/PostCard'
 import TopicCard from '~/components/TopicCard'
-import userProfileViewModel from '~/viewmodel/UserProfileVIewModel'
 
 export default {
   name: 'Profile',
@@ -52,20 +51,20 @@ export default {
     PostCard,
     TopicCard
   },
-  async asyncData ({ params, store }) {
+  async asyncData ({ app, params, store, error }) {
     try {
-      const apolloData = await userProfileViewModel.getUserProfileData(
+      const apolloData = await app.$userProfileViewModel.getUserProfileData(
         store.state.currentUser.uid
       )
 
       if (apolloData && apolloData.data) {
         return { apolloData: apolloData.data }
       } else {
-        throw new Error('Some error occurred in apolloData')
+        error({ statusCode: 404, message: 'Topic not found' })
       }
-    } catch (error) {
+    } catch (errorObj) {
       // eslint-disable-next-line
-      console.log(error);
+      console.log(errorObj);
     }
   },
   data () {

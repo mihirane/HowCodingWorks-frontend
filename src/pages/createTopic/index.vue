@@ -43,8 +43,6 @@
 
 <script>
 import ClientOnly from 'vue-client-only'
-import createTopicViewModel from '~/viewmodel/CreateTopicViewModel'
-import uploadImageToFirebase from '~/plugins/image-uploader'
 
 export default {
   name: 'CreateTopic',
@@ -102,7 +100,7 @@ export default {
           .map(w => w[0].toUpperCase() + w.substr(1).toLowerCase())
           .join('')
 
-        const result = await uploadImageToFirebase(
+        const result = await this.$uploadImageToFirebase(
           this.topicThumbnail,
           '/topics/' + topicName
         )
@@ -110,7 +108,7 @@ export default {
         if (result.success === 1) {
           const topicThumbnail = await result.file.url
 
-          const apolloData = await createTopicViewModel.createTopic(
+          const apolloData = await this.$createTopicViewModel.createTopic(
             topicName,
             this.topicDescription,
             topicThumbnail

@@ -38,8 +38,6 @@
 </template>
 
 <script>
-import topicContainerViewModel from '~/viewmodel/TopicContainerViewModel'
-
 export default {
   name: 'TopicCard',
   props: {
@@ -87,7 +85,7 @@ export default {
           this.$store.state.currentUser.uid &&
           this.$store.state.currentUser.uid != null
         ) {
-          const response = await topicContainerViewModel.followTopic(
+          const response = await this.$topicContainerViewModel.followTopic(
             this.$store.state.currentUser.uid,
             this.$props.topicName
           )
@@ -133,7 +131,7 @@ export default {
           this.$store.state.currentUser.uid &&
           this.$store.state.currentUser.uid != null
         ) {
-          const response = await topicContainerViewModel.unfollowTopic(
+          const response = await this.$topicContainerViewModel.unfollowTopic(
             this.$store.state.currentUser.uid,
             this.$props.topicName
           )

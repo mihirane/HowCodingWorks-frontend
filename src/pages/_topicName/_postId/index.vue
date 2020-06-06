@@ -69,10 +69,7 @@
 
 <script>
 import copy from 'copy-to-clipboard'
-import blogPostViewModel from '~/viewmodel/BlogPostViewModel'
-import createBlogPost from '~/blog-post-layout/BlogPostLayout'
 import TopicCard from '~/components/TopicCard'
-const env = require('~/environment/env')
 
 export default {
   name: 'BlogPost',
@@ -81,33 +78,38 @@ export default {
   components: {
     TopicCard
   },
-  async asyncData ({ params, store, error }) {
-    const topicName = params.topicName
-    const postId = params.postId.split('--')[1]
+  async asyncData ({ app, params, store, error }) {
+    try {
+      const topicName = params.topicName
+      const postId = params.postId.split('--')[1]
 
-    if (store.state.currentUser != null) {
-      const apolloData = await blogPostViewModel.getBlogPostData(
-        store.state.currentUser.uid,
-        topicName,
-        postId
-      )
+      if (store.state.currentUser != null) {
+        const apolloData = await app.$blogPostViewModel.getBlogPostData(
+          store.state.currentUser.uid,
+          topicName,
+          postId
+        )
 
-      if (apolloData && apolloData.data && !apolloData.errors) {
-        return { apolloData: apolloData.data }
+        if (apolloData && apolloData.data && !apolloData.errors) {
+          return { apolloData: apolloData.data }
+        } else {
+          error({ statusCode: 404, message: 'Post not found' })
+        }
       } else {
-        error({ statusCode: 404, message: 'Post not found' })
-      }
-    } else {
-      const apolloData = await blogPostViewModel.getBlogPostDataWithoutUser(
-        topicName,
-        postId
-      )
+        const apolloData = await app.$blogPostViewModel.getBlogPostDataWithoutUser(
+          topicName,
+          postId
+        )
 
-      if (apolloData && apolloData.data && !apolloData.errors) {
-        return { apolloData: apolloData.data }
-      } else {
-        error({ statusCode: 404, message: 'Post not found' })
+        if (apolloData && apolloData.data && !apolloData.errors) {
+          return { apolloData: apolloData.data }
+        } else {
+          error({ statusCode: 404, message: 'Post not found' })
+        }
       }
+    } catch (errorObj) {
+      // eslint-disable-next-line
+      console.log(errorObj)
     }
   },
   data () {
@@ -131,7 +133,7 @@ export default {
         .join(' ')
     },
     getPostDescription () {
-      return createBlogPost(
+      return this.$createBlogPost(
         JSON.parse(this.apolloData.getPostFromId.description).blocks
       )
     }
@@ -156,7 +158,7 @@ export default {
   },
   methods: {
     copyLinkToClipboard () {
-      copy(env.baseUrl + this.$route.fullPath)
+      copy(this.$env.baseUrl + this.$route.fullPath)
       this.snackbar = true
     },
     checkIfTopicIsFollowedByUser () {
@@ -172,7 +174,7 @@ export default {
           this.$store.state.currentUser.uid &&
           this.$store.state.currentUser.uid != null
         ) {
-          const response = await blogPostViewModel.likePost(
+          const response = await this.$blogPostViewModel.likePost(
             this.$store.state.currentUser.uid,
             this.$route.params.postId.split('--')[1]
           )
@@ -218,7 +220,7 @@ export default {
           this.$store.state.currentUser.uid &&
           this.$store.state.currentUser.uid != null
         ) {
-          const response = await blogPostViewModel.dislikePost(
+          const response = await this.$blogPostViewModel.dislikePost(
             this.$store.state.currentUser.uid,
             this.$route.params.postId.split('--')[1]
           )
@@ -264,7 +266,7 @@ export default {
           this.$store.state.currentUser.uid &&
           this.$store.state.currentUser.uid != null
         ) {
-          const response = await blogPostViewModel.savePost(
+          const response = await this.$blogPostViewModel.savePost(
             this.$store.state.currentUser.uid,
             this.$route.params.postId.split('--')[1]
           )
@@ -310,7 +312,7 @@ export default {
           this.$store.state.currentUser.uid &&
           this.$store.state.currentUser.uid != null
         ) {
-          const response = await blogPostViewModel.unsavePost(
+          const response = await this.$blogPostViewModel.unsavePost(
             this.$store.state.currentUser.uid,
             this.$route.params.postId.split('--')[1]
           )
@@ -370,7 +372,7 @@ export default {
         },
         {
           property: 'og:site_name',
-          content: env.baseUrl
+          content: this.$env.baseUrl
         }
       ]
     }
