@@ -1,5 +1,5 @@
-export default function ({ store, redirect }) {
-  if (store.state.currentUser == null) {
+export default function ({ app, redirect }) {
+  if (app.$cookies.get('currentUser') == null) {
     redirect('/signUp')
   }
 }

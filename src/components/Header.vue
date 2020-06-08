@@ -10,7 +10,7 @@
     <v-spacer />
 
     <v-btn
-      v-if="$store.state.currentUser == null"
+      v-if="$cookies.get('currentUser') == null"
       color="primary"
       @click="navigateToSignUp()"
     >
@@ -28,9 +28,9 @@
         <template v-slot:activator="{ on }">
           <v-avatar style="cursor: pointer;" @click="menu = true; selected = null;" v-on="on">
             <img
-              v-if="$store.state.currentUser.photoURL"
-              :src="$store.state.currentUser.photoURL"
-              v:bind:alt="$store.state.currentUser.displayName"
+              v-if="$cookies.get('currentUser').photoURL"
+              :src="$cookies.get('currentUser').photoURL"
+              v:bind:alt="$cookies.get('currentUser').displayName"
             >
           </v-avatar>
         </template>
@@ -38,20 +38,20 @@
           <v-list-item class="pl-0 py-2">
             <v-list-item-avatar>
               <img
-                v-if="$store.state.currentUser.photoURL"
-                :src="$store.state.currentUser.photoURL"
-                v:bind:alt="$store.state.currentUser.displayName"
+                v-if="$cookies.get('currentUser').photoURL"
+                :src="$cookies.get('currentUser').photoURL"
+                v:bind:alt="$cookies.get('currentUser').displayName"
               >
             </v-list-item-avatar>
 
             <span class="ml-n1">
               <v-list-item-title
-                v-if="$store.state.currentUser.displayName"
+                v-if="$cookies.get('currentUser').displayName"
                 class="font-weight-bold pb-1"
-              >{{ $store.state.currentUser.displayName }}</v-list-item-title>
+              >{{ $cookies.get('currentUser').displayName }}</v-list-item-title>
               <v-list-item-subtitle
-                v-if="$store.state.currentUser.email"
-              >{{ $store.state.currentUser.email }}</v-list-item-subtitle>
+                v-if="$cookies.get('currentUser').email"
+              >{{ $cookies.get('currentUser').email }}</v-list-item-subtitle>
             </span>
           </v-list-item>
           <v-divider />
