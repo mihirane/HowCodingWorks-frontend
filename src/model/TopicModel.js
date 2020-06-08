@@ -1,4 +1,5 @@
-const firebase = require('firebase/app')
+import firebase from 'firebase/app'
+import 'firebase/firestore'
 const db = firebase.firestore()
 const FieldValue = firebase.firestore.FieldValue
 
