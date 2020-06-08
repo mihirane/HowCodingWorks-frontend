@@ -172,11 +172,11 @@ export default {
     async likePost () {
       try {
         if (
-          this.$store.state.currentUser.uid &&
-          this.$store.state.currentUser.uid != null
+          this.$cookies.get('currentUser') &&
+          this.$cookies.get('currentUser').uid != null
         ) {
           const response = await this.$blogPostViewModel.likePost(
-            this.$store.state.currentUser.uid,
+            this.$cookies.get('currentUser').uid,
             this.$route.params.postId.split('--')[1]
           )
 
@@ -218,11 +218,11 @@ export default {
     async dislikePost () {
       try {
         if (
-          this.$store.state.currentUser.uid &&
-          this.$store.state.currentUser.uid != null
+          this.$cookies.get('currentUser') &&
+          this.$cookies.get('currentUser').uid != null
         ) {
           const response = await this.$blogPostViewModel.dislikePost(
-            this.$store.state.currentUser.uid,
+            this.$cookies.get('currentUser').uid,
             this.$route.params.postId.split('--')[1]
           )
 
@@ -264,11 +264,11 @@ export default {
     async savePost () {
       try {
         if (
-          this.$store.state.currentUser.uid &&
-          this.$store.state.currentUser.uid != null
+          this.$cookies.get('currentUser') &&
+          this.$cookies.get('currentUser').uid != null
         ) {
           const response = await this.$blogPostViewModel.savePost(
-            this.$store.state.currentUser.uid,
+            this.$cookies.get('currentUser').uid,
             this.$route.params.postId.split('--')[1]
           )
 
@@ -310,11 +310,11 @@ export default {
     async unsavePost () {
       try {
         if (
-          this.$store.state.currentUser.uid &&
-          this.$store.state.currentUser.uid != null
+          this.$cookies.get('currentUser') &&
+          this.$cookies.get('currentUser').uid != null
         ) {
           const response = await this.$blogPostViewModel.unsavePost(
-            this.$store.state.currentUser.uid,
+            this.$cookies.get('currentUser').uid,
             this.$route.params.postId.split('--')[1]
           )
 

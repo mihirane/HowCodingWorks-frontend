@@ -82,11 +82,11 @@ export default {
     async followTopic () {
       try {
         if (
-          this.$store.state.currentUser.uid &&
-          this.$store.state.currentUser.uid != null
+          this.$cookies.get('currentUser') &&
+          this.$cookies.get('currentUser').uid != null
         ) {
           const response = await this.$topicContainerViewModel.followTopic(
-            this.$store.state.currentUser.uid,
+            this.$cookies.get('currentUser').uid,
             this.$props.topicName
           )
 
@@ -128,11 +128,11 @@ export default {
     async unfollowTopic () {
       try {
         if (
-          this.$store.state.currentUser.uid &&
-          this.$store.state.currentUser.uid != null
+          this.$cookies.get('currentUser') &&
+          this.$cookies.get('currentUser').uid != null
         ) {
           const response = await this.$topicContainerViewModel.unfollowTopic(
-            this.$store.state.currentUser.uid,
+            this.$cookies.get('currentUser').uid,
             this.$props.topicName
           )
 
