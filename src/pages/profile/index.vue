@@ -58,17 +58,10 @@ export default {
     PostCard,
     TopicCard
   },
-<<<<<<< HEAD
   async asyncData ({ app, params, store, error }) {
     try {
       const apolloData = await app.$userProfileViewModel.getUserProfileData(
-        store.state.currentUser.uid
-=======
-  async asyncData ({ app, params, store }) {
-    try {
-      const apolloData = await userProfileViewModel.getUserProfileData(
         app.$cookies.get('currentUser').uid
->>>>>>> final
       )
 
       if (apolloData && apolloData.data) {
@@ -78,7 +71,8 @@ export default {
       }
     } catch (errorObj) {
       // eslint-disable-next-line
-      console.log(errorObj);
+      console.log(errorObj)
+      error({ statusCode: 404, message: '404 Not Found' })
     }
   },
   data () {

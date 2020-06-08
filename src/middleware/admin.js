@@ -5,7 +5,7 @@ export default async function ({ app, store, error }) {
   try {
     if (store.state.currentUser != null) {
       const response = await axios.post(app.$env.adminClaimsEndpoint, {
-        uid: store.state.currentUser.uid
+        uid: app.$cookies.get('currentUser').uid
       })
 
       if (response && response.data && response.data.custom_token) {

@@ -103,6 +103,7 @@ export default {
     } catch (errorObj) {
       // eslint-disable-next-line
       console.log(errorObj)
+      error({ statusCode: 404, message: '404 Not Found' })
     }
   },
   computed: {
