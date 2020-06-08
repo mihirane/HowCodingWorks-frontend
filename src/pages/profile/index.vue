@@ -2,10 +2,13 @@
   <div class="ma-0 pa-0">
     <div class="d-flex flex-column align-center justify-space-between mb-8">
       <v-avatar class="mb-4" size="80">
-        <img :src="$store.state.currentUser.photoURL" :alt="$store.state.currentUser.displayName">
+        <img
+          :src="$cookies.get('currentUser').photoURL"
+          :alt="$cookies.get('currentUser').displayName"
+        >
       </v-avatar>
-      <span class="headline font-weight-bold">{{ $store.state.currentUser.displayName }}</span>
-      <span class="subtitle-1" style="color: grey;">{{ $store.state.currentUser.email }}</span>
+      <span class="headline font-weight-bold">{{ $cookies.get('currentUser').displayName }}</span>
+      <span class="subtitle-1" style="color: grey;">{{ $cookies.get('currentUser').email }}</span>
     </div>
     <v-tabs v-model="tab" background-color="#121212">
       <v-tab>Saved Posts</v-tab>
@@ -26,7 +29,11 @@
         </div>
       </v-tab-item>
       <v-tab-item>
-        <div v-for="topic in apolloData.getAllFollowedTopicsByUser" :key="topic.name" class="ma-0 pa-0">
+        <div
+          v-for="topic in apolloData.getAllFollowedTopicsByUser"
+          :key="topic.name"
+          class="ma-0 pa-0"
+        >
           <topic-card
             :topic-name="topic.name"
             :topic-thumbnail-link="topic.thumbnailLink"
@@ -52,10 +59,10 @@ export default {
     PostCard,
     TopicCard
   },
-  async asyncData ({ params, store }) {
+  async asyncData ({ app, params, store }) {
     try {
       const apolloData = await userProfileViewModel.getUserProfileData(
-        store.state.currentUser.uid
+        app.$cookies.get('currentUser').uid
       )
 
       if (apolloData && apolloData.data) {

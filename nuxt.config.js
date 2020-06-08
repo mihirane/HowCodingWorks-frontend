@@ -1,4 +1,5 @@
 // const colors = require('vuetify/es5/util/colors').default
+const path = require('path')
 
 module.exports = {
   mode: 'universal',
@@ -107,6 +108,7 @@ module.exports = {
     */
     extractCSS: true,
     extend (config, ctx) {
+      config.resolve.alias.vue$ = path.resolve(__dirname, './node_modules/vue/dist/vue.esm.js')
     }
   }
 }
