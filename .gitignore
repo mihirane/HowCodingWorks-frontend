@@ -94,3 +94,8 @@ sw.*
 
 #firebase 
 firebase/config.js
+
+
+.nuxt 
+_nuxt
+public
