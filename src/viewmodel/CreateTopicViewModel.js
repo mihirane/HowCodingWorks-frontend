@@ -6,13 +6,18 @@ class CreateTopicViewModel {
     topicDescription,
     topicThumbnailLink
   ) {
-    return await topicModel.createTopic(
-      {
-        name: topicName,
-        description: topicDescription,
-        thumbnailLink: topicThumbnailLink
-      }
-    )
+    try {
+      return await topicModel.createTopic(
+        {
+          name: topicName,
+          description: topicDescription,
+          thumbnailLink: topicThumbnailLink
+        }
+      )
+    } catch (error) {
+    // eslint-disable-next-line
+    console.log(error)
+    }
   }
 }
 

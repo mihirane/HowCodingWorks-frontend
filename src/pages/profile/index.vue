@@ -1,14 +1,11 @@
 <template>
-  <div class="ma-0 pa-0">
+  <div v-if="currentUser && currentUser !== null" class="ma-0 pa-0">
     <div class="d-flex flex-column align-center justify-space-between mb-8">
       <v-avatar class="mb-4" size="80">
-        <img
-          :src="$cookies.get('currentUser').photoURL"
-          :alt="$cookies.get('currentUser').displayName"
-        >
+        <img :src="currentUser.photoURL" :alt="currentUser.displayName">
       </v-avatar>
-      <span class="headline font-weight-bold">{{ $cookies.get('currentUser').displayName }}</span>
-      <span class="subtitle-1" style="color: grey;">{{ $cookies.get('currentUser').email }}</span>
+      <span class="headline font-weight-bold">{{ currentUser.displayName }}</span>
+      <span class="subtitle-1" style="color: grey;">{{ currentUser.email }}</span>
     </div>
     <v-tabs v-model="tab" background-color="#121212">
       <v-tab>Saved Posts</v-tab>
@@ -54,30 +51,43 @@ export default {
     PostCard,
     TopicCard
   },
-  async asyncData ({ app, params, error }) {
+  async asyncData ({ req, app, params, error }) {
     try {
-      const currentUser = await app.$cookies.get('currentUser')
+      let currentUser
 
-      const getAllFollowedTopicsByUser = await app.$userProfileViewModel.getAllFollowedTopicsByUser(
-        currentUser.uid
-      )
+      if (process.server) {
+        currentUser = await req.cookies.currentUser
+        currentUser = await JSON.parse(currentUser)
+      }
 
-      const getAllSavedPostsByUser = await app.$userProfileViewModel.getAllSavedPostsByUser(
-        currentUser.uid
-      )
+      if (process.client) {
+        currentUser = await app.$cookies.get('currentUser')
+      }
 
-      if (
-        getAllFollowedTopicsByUser &&
-        getAllSavedPostsByUser &&
-        getAllFollowedTopicsByUser !== null &&
-        getAllSavedPostsByUser !== null
-      ) {
-        return {
-          getAllFollowedTopicsByUser,
-          getAllSavedPostsByUser
+      if (currentUser && currentUser != null) {
+        const getAllFollowedTopicsByUser = await app.$userProfileViewModel.getAllFollowedTopicsByUser(
+          currentUser.uid
+        )
+
+        const getAllSavedPostsByUser = await app.$userProfileViewModel.getAllSavedPostsByUser(
+          currentUser.uid
+        )
+
+        if (
+          getAllFollowedTopicsByUser &&
+          getAllSavedPostsByUser &&
+          getAllFollowedTopicsByUser !== null &&
+          getAllSavedPostsByUser !== null
+        ) {
+          return {
+            getAllFollowedTopicsByUser,
+            getAllSavedPostsByUser
+          }
+        } else {
+          throw new Error('some error occurred while getting user data')
         }
       } else {
-        throw new Error('some error occurred while getting user data')
+        throw new Error('No user signed in')
       }
     } catch (err) {
       // eslint-disable-next-line
@@ -88,6 +98,18 @@ export default {
   data () {
     return {
       tab: null
+    }
+  },
+  computed: {
+    currentUser () {
+      if (
+        this.$cookies.get('currentUser') &&
+        this.$cookies.get('currentUser') != null
+      ) {
+        return this.$cookies.get('currentUser')
+      } else {
+        return null
+      }
     }
   }
 }

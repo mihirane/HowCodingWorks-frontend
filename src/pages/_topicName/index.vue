@@ -80,11 +80,23 @@ export default {
         topicName
       )
 
+      let currentUser
       let checkIfTopicIsFollowedByUser = false
 
-      if (app.$cookies.get('currentUser') && app.$cookies.get('currentUser') !== null) {
-        const currentUser = await app.$cookies.get('currentUser')
-        checkIfTopicIsFollowedByUser = await app.$topicContainerViewModel.checkIfTopicIsFollowedByUser(currentUser.uid, topicName)
+      if (process.server) {
+        currentUser = await req.cookies.currentUser
+        currentUser = await JSON.parse(currentUser)
+      }
+
+      if (process.client) {
+        currentUser = await app.$cookies.get('currentUser')
+      }
+
+      if (currentUser && currentUser !== null) {
+        checkIfTopicIsFollowedByUser = await app.$topicContainerViewModel.checkIfTopicIsFollowedByUser(
+          currentUser.uid,
+          topicName
+        )
       }
 
       if (

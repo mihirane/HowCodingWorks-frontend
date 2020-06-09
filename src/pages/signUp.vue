@@ -29,8 +29,8 @@ export default {
           if (response && response.data && response.data.custom_token) {
             const data = await firebase.auth().signInWithCustomToken(response.data.custom_token)
             await this.$cookies.set('currentUser', data.user)
-            await this.$router.push('/')
             await window.location.reload(true)
+            await this.$router.push('/')
           }
         }
       } catch (error) {

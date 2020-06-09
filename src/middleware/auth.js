@@ -1,5 +1,15 @@
-export default function ({ app, redirect }) {
-  if (app.$cookies.get('currentUser') === null) {
+export default function ({ req, app, redirect }) {
+  let currentUser
+
+  if (process.server) {
+    currentUser = req.cookies.currentUser
+  }
+
+  if (process.client) {
+    currentUser = app.$cookies.get('currentUser')
+  }
+
+  if (!currentUser || currentUser == null) {
     redirect('/signUp')
   }
 }

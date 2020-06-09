@@ -12,14 +12,19 @@ class PostEditorViewModel {
     postCaption,
     postDescription
   ) {
-    return await postModel.createPost(
-      {
-        topicName: postTopicName,
-        title: postTitle,
-        caption: postCaption,
-        description: postDescription
-      }
-    )
+    try {
+      return await postModel.createPost(
+        {
+          topicName: postTopicName,
+          title: postTitle,
+          caption: postCaption,
+          description: postDescription
+        }
+      )
+    } catch (error) {
+      // eslint-disable-next-line
+      console.log(error)
+    }
   }
 }
 

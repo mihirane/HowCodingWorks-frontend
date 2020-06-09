@@ -72,7 +72,7 @@ export default {
   components: {
     TopicCard
   },
-  async asyncData ({ app, params, error }) {
+  async asyncData ({ req, app, params, error }) {
     try {
       const topicName = params.topicName
       const postId = params.postId.split('--')[1]
@@ -82,13 +82,21 @@ export default {
         topicName
       )
 
+      let currentUser
       let checkIfTopicIsFollowedByUser = false
       let checkIfPostIsLikedByUser = false
       let checkIfPostIsSavedByUser = false
 
-      if (app.$cookies.get('currentUser') && app.$cookies.get('currentUser') !== null) {
-        const currentUser = await app.$cookies.get('currentUser')
+      if (process.server) {
+        currentUser = await req.cookies.currentUser
+        currentUser = await JSON.parse(currentUser)
+      }
 
+      if (process.client) {
+        currentUser = await app.$cookies.get('currentUser')
+      }
+
+      if (currentUser && currentUser != null) {
         checkIfTopicIsFollowedByUser = await app.$blogPostViewModel.checkIfTopicIsFollowedByUser(
           currentUser.uid,
           topicName

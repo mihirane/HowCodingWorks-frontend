@@ -4,39 +4,84 @@ import topicModel from './../model/TopicModel'
 
 class BlogPostViewModel {
   static async getPostFromId (postId) {
-    return await postModel.getPostFromId(postId)
+    try {
+      return await postModel.getPostFromId(postId)
+    } catch (error) {
+      // eslint-disable-next-line
+      console.log(error)
+    }
   }
 
   static async getTopicFromTopicName (topicName) {
-    return await topicModel.getTopicFromTopicName(topicName)
+    try {
+      return await topicModel.getTopicFromTopicName(topicName)
+    } catch (error) {
+    // eslint-disable-next-line
+    console.log(error)
+    }
   }
 
   static async checkIfTopicIsFollowedByUser (userId, topicName) {
-    return await userModel.checkIfTopicIsFollowedByUser(userId, topicName)
+    try {
+      return await userModel.checkIfTopicIsFollowedByUser(userId, topicName)
+    } catch (error) {
+    // eslint-disable-next-line
+    console.log(error)
+    }
   }
 
   static async checkIfPostIsLikedByUser (userId, postId) {
-    return await userModel.checkIfPostIsLikedByUser(userId, postId)
+    try {
+      return await userModel.checkIfPostIsLikedByUser(userId, postId)
+    } catch (error) {
+    // eslint-disable-next-line
+    console.log(error)
+    }
   }
 
   static async checkIfPostIsSavedByUser (userId, postId) {
-    return await userModel.checkIfPostIsSavedbyUser(userId, postId)
+    try {
+      return await userModel.checkIfPostIsSavedbyUser(userId, postId)
+    } catch (error) {
+    // eslint-disable-next-line
+    console.log(error)
+    }
   }
 
   static async likePost (userId, postId) {
-    return await userModel.likePost(userId, postId)
+    try {
+      return await userModel.likePost(userId, postId)
+    } catch (error) {
+    // eslint-disable-next-line
+    console.log(error)
+    }
   }
 
   static async dislikePost (userId, postId) {
-    return await userModel.dislikePost(userId, postId)
+    try {
+      return await userModel.dislikePost(userId, postId)
+    } catch (error) {
+    // eslint-disable-next-line
+    console.log(error)
+    }
   }
 
   static async savePost (userId, postId) {
-    return await userModel.savePost(userId, postId)
+    try {
+      return await userModel.savePost(userId, postId)
+    } catch (error) {
+    // eslint-disable-next-line
+    console.log(error)
+    }
   }
 
   static async unsavePost (userId, postId) {
-    return await userModel.unsavePost(userId, postId)
+    try {
+      return await userModel.unsavePost(userId, postId)
+    } catch (error) {
+    // eslint-disable-next-line
+    console.log(error)
+    }
   }
 }
 
