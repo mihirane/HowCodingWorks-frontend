@@ -88,11 +88,11 @@ export default {
       let checkIfPostIsSavedByUser = false
 
       if (process.server) {
-        currentUser = await req.cookies.currentUser
+        currentUser = await req.cookies.__session
       }
 
       if (process.client) {
-        currentUser = await app.$cookies.get('currentUser')
+        currentUser = await app.$cookies.get('__session')
       }
 
       if (currentUser && currentUser != null) {
@@ -180,11 +180,11 @@ export default {
     async likePost () {
       try {
         if (
-          this.$cookies.get('currentUser') &&
-          this.$cookies.get('currentUser').uid != null
+          this.$cookies.get('__session') &&
+          this.$cookies.get('__session').uid != null
         ) {
           const likePost = await this.$blogPostViewModel.likePost(
-            this.$cookies.get('currentUser').uid,
+            this.$cookies.get('__session').uid,
             this.$route.params.postId.split('--')[1]
           )
 
@@ -226,11 +226,11 @@ export default {
     async dislikePost () {
       try {
         if (
-          this.$cookies.get('currentUser') &&
-          this.$cookies.get('currentUser').uid != null
+          this.$cookies.get('__session') &&
+          this.$cookies.get('__session').uid != null
         ) {
           const dislikePost = await this.$blogPostViewModel.dislikePost(
-            this.$cookies.get('currentUser').uid,
+            this.$cookies.get('__session').uid,
             this.$route.params.postId.split('--')[1]
           )
 
@@ -272,11 +272,11 @@ export default {
     async savePost () {
       try {
         if (
-          this.$cookies.get('currentUser') &&
-          this.$cookies.get('currentUser').uid != null
+          this.$cookies.get('__session') &&
+          this.$cookies.get('__session').uid != null
         ) {
           const savePost = await this.$blogPostViewModel.savePost(
-            this.$cookies.get('currentUser').uid,
+            this.$cookies.get('__session').uid,
             this.$route.params.postId.split('--')[1]
           )
 
@@ -318,11 +318,11 @@ export default {
     async unsavePost () {
       try {
         if (
-          this.$cookies.get('currentUser') &&
-          this.$cookies.get('currentUser').uid != null
+          this.$cookies.get('__session') &&
+          this.$cookies.get('__session').uid != null
         ) {
           const unsavePost = await this.$blogPostViewModel.unsavePost(
-            this.$cookies.get('currentUser').uid,
+            this.$cookies.get('__session').uid,
             this.$route.params.postId.split('--')[1]
           )
 

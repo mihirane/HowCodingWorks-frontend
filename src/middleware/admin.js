@@ -3,9 +3,9 @@ import firebase from 'firebase/app'
 
 export default async function ({ app, store, error }) {
   try {
-    if (app.$cookies.get('currentUser') !== null) {
+    if (app.$cookies.get('__session') !== null) {
       const response = await axios.post(app.$env.adminClaimsEndpoint, {
-        uid: app.$cookies.get('currentUser').uid
+        uid: app.$cookies.get('__session').uid
       })
 
       if (response && response.data && response.data.custom_token) {

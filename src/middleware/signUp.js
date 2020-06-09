@@ -2,11 +2,11 @@ export default function ({ req, app, redirect }) {
   let currentUser
 
   if (process.server) {
-    currentUser = req.cookies.currentUser
+    currentUser = req.cookies.__session
   }
 
   if (process.client) {
-    currentUser = app.$cookies.get('currentUser')
+    currentUser = app.$cookies.get('__session')
   }
 
   if (currentUser && currentUser != null) {

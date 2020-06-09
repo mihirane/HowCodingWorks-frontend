@@ -84,11 +84,11 @@ export default {
       let checkIfTopicIsFollowedByUser = false
 
       if (process.server) {
-        currentUser = await req.cookies.currentUser
+        currentUser = await req.cookies.__session
       }
 
       if (process.client) {
-        currentUser = await app.$cookies.get('currentUser')
+        currentUser = await app.$cookies.get('__session')
       }
 
       if (currentUser && currentUser !== null) {
@@ -141,11 +141,11 @@ export default {
     async followTopic () {
       try {
         if (
-          this.$cookies.get('currentUser') &&
-          this.$cookies.get('currentUser').uid != null
+          this.$cookies.get('__session') &&
+          this.$cookies.get('__session').uid != null
         ) {
           const followTopic = await this.$topicContainerViewModel.followTopic(
-            this.$cookies.get('currentUser').uid,
+            this.$cookies.get('__session').uid,
             this.$route.params.topicName
           )
 
@@ -187,11 +187,11 @@ export default {
     async unfollowTopic () {
       try {
         if (
-          this.$cookies.get('currentUser') &&
-          this.$cookies.get('currentUser').uid != null
+          this.$cookies.get('__session') &&
+          this.$cookies.get('__session').uid != null
         ) {
           const unfollowTopic = await this.$topicContainerViewModel.unfollowTopic(
-            this.$cookies.get('currentUser').uid,
+            this.$cookies.get('__session').uid,
             this.$route.params.topicName
           )
 

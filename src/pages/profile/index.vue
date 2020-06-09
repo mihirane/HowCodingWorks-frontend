@@ -56,11 +56,11 @@ export default {
       let currentUser
 
       if (process.server) {
-        currentUser = await req.cookies.currentUser
+        currentUser = await req.cookies.__session
       }
 
       if (process.client) {
-        currentUser = await app.$cookies.get('currentUser')
+        currentUser = await app.$cookies.get('__session')
       }
 
       if (currentUser && currentUser != null) {
@@ -102,10 +102,10 @@ export default {
   computed: {
     currentUser () {
       if (
-        this.$cookies.get('currentUser') &&
-        this.$cookies.get('currentUser') != null
+        this.$cookies.get('__session') &&
+        this.$cookies.get('__session') != null
       ) {
-        return this.$cookies.get('currentUser')
+        return this.$cookies.get('__session')
       } else {
         return null
       }

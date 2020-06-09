@@ -93,8 +93,8 @@ export default {
   },
   computed: {
     currentUser () {
-      if (this.$cookies.get('currentUser') && this.$cookies.get('currentUser') != null) {
-        return this.$cookies.get('currentUser')
+      if (this.$cookies.get('__session') && this.$cookies.get('__session') != null) {
+        return this.$cookies.get('__session')
       } else {
         return null
       }
@@ -104,7 +104,7 @@ export default {
     signOutUser () {
       return firebase.auth().signOut()
         .then(async () => {
-          await this.$cookies.set('currentUser', null)
+          await this.$cookies.set('__session', null)
           window.location.reload(true)
         }).catch((error) => {
           // eslint-disable-next-line
