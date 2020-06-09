@@ -106,16 +106,17 @@ export default {
         )
 
         if (result.success === 1) {
-          const topicThumbnail = await result.file.url
+          const topicThumbnailLink = await result.file.url
 
-          const apolloData = await this.$createTopicViewModel.createTopic(
-            topicName,
-            this.topicDescription,
-            topicThumbnail
+          const createTopic = await this.$createTopicViewModel.createTopic(
+            {
+              name: topicName,
+              description: this.topicDescription,
+              thumbnailLink: topicThumbnailLink
+            }
           )
-          // eslint-disable-next-line
-        console.log(apolloData)
-          if (apolloData && apolloData.data && !apolloData.errors) {
+
+          if (createTopic && createTopic !== null) {
             return this.$router.push('/')
           } else {
             throw new Error('Some error occurred while creating topic')
@@ -123,9 +124,9 @@ export default {
         } else {
           throw new Error('Some error occurred while uploading topic thumbnail image to firebase')
         }
-      } catch (error) {
+      } catch (err) {
         // eslint-disable-next-line
-        console.log(error)
+        console.log(err)
       }
     },
     clearAllFields () {

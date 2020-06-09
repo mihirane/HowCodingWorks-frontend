@@ -34,6 +34,7 @@
     "apollo-boost": "^0.4.9",
     "autosize": "^4.0.2",
     "axios": "^0.19.2",
+    "cookie-parser": "^1.4.5",
     "cookie-universal-nuxt": "^2.1.4",
     "copy-to-clipboard": "^3.3.1",
     "cross-env": "^5.2.0",

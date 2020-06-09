@@ -85,12 +85,12 @@ export default {
           this.$cookies.get('currentUser') &&
           this.$cookies.get('currentUser').uid != null
         ) {
-          const response = await this.$topicContainerViewModel.followTopic(
+          const followTopic = await this.$topicContainerViewModel.followTopic(
             this.$cookies.get('currentUser').uid,
             this.$props.topicName
           )
 
-          if (!response.data) {
+          if (!followTopic) {
             throw new Error('Some error occurred while following topic')
           }
 
@@ -131,12 +131,12 @@ export default {
           this.$cookies.get('currentUser') &&
           this.$cookies.get('currentUser').uid != null
         ) {
-          const response = await this.$topicContainerViewModel.unfollowTopic(
+          const unfollowTopic = await this.$topicContainerViewModel.unfollowTopic(
             this.$cookies.get('currentUser').uid,
             this.$props.topicName
           )
 
-          if (!response.data) {
+          if (!unfollowTopic) {
             throw new Error('Some error occurred while unfollowing topic')
           }
 

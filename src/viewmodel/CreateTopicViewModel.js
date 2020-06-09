@@ -1,5 +1,4 @@
-import axios from 'axios'
-const env = require('~/environment/env')
+import topicModel from './../model/TopicModel'
 
 class CreateTopicViewModel {
   static async createTopic (
@@ -7,34 +6,13 @@ class CreateTopicViewModel {
     topicDescription,
     topicThumbnailLink
   ) {
-    try {
-      const response = await axios.post(env.graphqlEndpoint, {
-        query: `
-            mutation CreateTopic($topicInputVar: TopicInput!) {
-                createTopic(topicInput: $topicInputVar) {
-                    name
-                }
-            }
-        `,
-        operationName: 'CreateTopic',
-        variables: {
-          topicInputVar: {
-            name: topicName,
-            description: topicDescription,
-            thumbnailLink: topicThumbnailLink
-          }
-        }
-      })
-
-      if (response && response.data) {
-        return response.data
-      } else {
-        throw new Error('Some error occurred while following topic')
+    return await topicModel.createTopic(
+      {
+        name: topicName,
+        description: topicDescription,
+        thumbnailLink: topicThumbnailLink
       }
-    } catch (error) {
-      // eslint-disable-next-line
-        console.log(error.response.data.errors)
-    }
+    )
   }
 }
 

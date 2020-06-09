@@ -18,10 +18,10 @@
     <v-tabs-items v-model="tab" class="pt-1" style="backgroundColor: #121212">
       <v-tab-item class="px-3">
         <div class="posts-grid-container">
-          <div v-for="post in apolloData.getAllSavedPostsByUser" :key="post.id" class="ma-0 pa-0">
+          <div v-for="post in getAllSavedPostsByUser" :key="post.id" class="ma-0 pa-0">
             <post-card
-              :post-topic-name="post.topic.name"
               :post-id="post.id"
+              :post-topic-name="post.topic.name"
               :post-title="post.title"
               :post-caption="post.caption"
             />
@@ -29,11 +29,7 @@
         </div>
       </v-tab-item>
       <v-tab-item>
-        <div
-          v-for="topic in apolloData.getAllFollowedTopicsByUser"
-          :key="topic.name"
-          class="ma-0 pa-0"
-        >
+        <div v-for="topic in getAllFollowedTopicsByUser" :key="topic.name" class="ma-0 pa-0">
           <topic-card
             :topic-name="topic.name"
             :topic-thumbnail-link="topic.thumbnailLink"
@@ -58,20 +54,34 @@ export default {
     PostCard,
     TopicCard
   },
-  async asyncData ({ app, params, store, error }) {
+  async asyncData ({ app, params, error }) {
     try {
-      const apolloData = await app.$userProfileViewModel.getUserProfileData(
-        app.$cookies.get('currentUser').uid
+      const currentUser = await app.$cookies.get('currentUser')
+
+      const getAllFollowedTopicsByUser = await app.$userProfileViewModel.getAllFollowedTopicsByUser(
+        currentUser.uid
       )
 
-      if (apolloData && apolloData.data) {
-        return { apolloData: apolloData.data }
+      const getAllSavedPostsByUser = await app.$userProfileViewModel.getAllSavedPostsByUser(
+        currentUser.uid
+      )
+
+      if (
+        getAllFollowedTopicsByUser &&
+        getAllSavedPostsByUser &&
+        getAllFollowedTopicsByUser !== null &&
+        getAllSavedPostsByUser !== null
+      ) {
+        return {
+          getAllFollowedTopicsByUser,
+          getAllSavedPostsByUser
+        }
       } else {
-        error({ statusCode: 404, message: 'Topic not found' })
+        throw new Error('some error occurred while getting user data')
       }
-    } catch (errorObj) {
+    } catch (err) {
       // eslint-disable-next-line
-      console.log(errorObj)
+      console.log(err);
       error({ statusCode: 404, message: '404 Not Found' })
     }
   },

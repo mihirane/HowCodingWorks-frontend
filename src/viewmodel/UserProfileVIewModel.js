@@ -1,43 +1,12 @@
-import axios from 'axios'
-const env = require('~/environment/env')
+import userModel from './../model/UserModel'
 
 class UserProfileViewModel {
-  static async getUserProfileData (userId) {
-    try {
-      const response = await axios.post(env.graphqlEndpoint, {
-        query: `
-            query GetUserProfileData($userIdVar: String!) {
-                getAllSavedPostsByUser(userId: $userIdVar) {
-                    id
-                    title
-                    caption
-                    topic {
-                        name
-                    }
-                }
+  static async getAllSavedPostsByUser (userId) {
+    return await userModel.getAllSavedPostsByUser(userId)
+  }
 
-                getAllFollowedTopicsByUser(userId: $userIdVar) {
-                    name
-                    thumbnailLink
-                    followersCount
-                }
-              }
-          `,
-        operationName: 'GetUserProfileData',
-        variables: {
-          userIdVar: userId
-        }
-      })
-
-      if (response && response.data) {
-        return response.data
-      } else {
-        throw new Error('Some error occurred while fetching user profile data')
-      }
-    } catch (error) {
-      // eslint-disable-next-line
-        console.log(error.response.data.errors)
-    }
+  static async getAllFollowedTopicsByUser (userId) {
+    return await userModel.getAllFollowedTopicsByUser(userId)
   }
 }
 

@@ -14,6 +14,10 @@ service cloud.firestore {
     match /users/{userId}/{anyUserFile=**}{
     	allow read, write: if request.auth.uid == userId;
     }
+
+    match /posts/{document=**}/{
+    	allow read, write: if true;
+    }
     
     match /{document=**} {
       allow read: if true;

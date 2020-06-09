@@ -1,11 +1,27 @@
 import firebase from 'firebase/app'
 import 'firebase/firestore'
+import topicModel from './TopicModel'
+import postModel from './PostModel'
 const db = firebase.firestore()
-const topicModel = require('./TopicModel.js')
-const postModel = require('./PostModel.js')
 const FieldValue = firebase.firestore.FieldValue
 
-class UserService {
+class UserModel {
+  static async checkIfUserExists (userId) {
+    try {
+      const userRef = await db.collection('users').doc(userId).get()
+
+      if (userRef.exists) {
+        return true
+      } else {
+        return false
+      }
+    } catch (error) {
+      // eslint-disable-next-line
+      console.log(error)
+      return new Error('An unknown error occurred', 'USER_QUERY_FAILED')
+    }
+  }
+
   static async checkIfPostIsLikedByUser (userId, postId) {
     try {
       const userRef = await db.collection('users').doc(userId).get()
@@ -37,7 +53,7 @@ class UserService {
       const userRef = await db.collection('users').doc(userId).get()
 
       if (userRef.exists) {
-        const checkIfPostExists = await this.checkIfPostExists(postId)
+        const checkIfPostExists = await postModel.checkIfPostExists(postId)
 
         if (checkIfPostExists) {
           const checkIfPostIsLikedByUser = await this.checkIfPostIsLikedByUser(userId, postId)
@@ -73,7 +89,7 @@ class UserService {
       const userRef = await db.collection('users').doc(userId).get()
 
       if (userRef.exists) {
-        const checkIfPostExists = await this.checkIfPostExists(postId)
+        const checkIfPostExists = await postModel.checkIfPostExists(postId)
 
         if (checkIfPostExists) {
           const checkIfPostIsLikedByUser = await this.checkIfPostIsLikedByUser(userId, postId)
@@ -377,4 +393,4 @@ class UserService {
   }
 }
 
-module.exports = UserService
+export default UserModel

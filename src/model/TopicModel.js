@@ -3,7 +3,7 @@ import 'firebase/firestore'
 const db = firebase.firestore()
 const FieldValue = firebase.firestore.FieldValue
 
-class TopicService {
+class TopicModel {
   static async getAllTopics () {
     try {
       const arrayOfTopics = await db.collection('topics').get()
@@ -14,7 +14,8 @@ class TopicService {
             name: doc.id,
             description: doc.data().description,
             thumbnailLink: doc.data().thumbnailLink,
-            creationTime: doc.data().creationTime._seconds * 1000
+            creationTime: doc.data().creationTime.toDate(),
+            followersCount: await this.getFollowersCountOnTopic(doc.id)
           }
         })
 
@@ -38,7 +39,8 @@ class TopicService {
           name: doc.id,
           description: doc.data().description,
           thumbnailLink: doc.data().thumbnailLink,
-          creationTime: doc.data().creationTime._seconds * 1000
+          creationTime: doc.data().creationTime.toDate(),
+          followersCount: await this.getFollowersCountOnTopic(doc.id)
         }
       } else {
         return new Error(`Topic does not exist with name : ${topicName}`, 'INVALID_TOPIC_NAME')
@@ -78,7 +80,8 @@ class TopicService {
           name: topicInput.name,
           description: topicInput.description,
           thumbnailLink: topicInput.thumbnailLink,
-          creationTime: FieldValue.serverTimestamp()._seconds * 1000
+          creationTime: FieldValue.serverTimestamp().toDate(),
+          followersCount: await this.getFollowersCountOnTopic(topicInput.name)
         }
       } else {
         return Error('Some error occurred while creating post', 'TOPIC_MUTATION_FAILED')
@@ -121,4 +124,4 @@ class TopicService {
   }
 }
 
-module.exports = TopicService
+export default TopicModel

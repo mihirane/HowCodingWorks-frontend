@@ -3,25 +3,22 @@
     <div class="mb-6 px-2">
       <v-list-item class="pl-1">
         <v-list-item-avatar size="14%" left>
-          <v-img
-            :src="apolloData.getTopicFromTopicName.thumbnailLink"
-            :alt="getTopicName + 'Thumbnail'"
-          />
+          <v-img :src="getTopicFromTopicName.thumbnailLink" :alt="getTopicName + 'Thumbnail'" />
         </v-list-item-avatar>
         <span class="mr-4">
           <v-list-item-title class="font-weight-bold mb-1 topic-name">
             <h1 class="font-weight-bold headline">{{ getTopicName }}</h1>
           </v-list-item-title>
           <v-list-item-subtitle class="font-weight-light followers-count">
-            <span id="follow-count">{{ apolloData.getTopicFromTopicName.followersCount }}</span>
+            <span id="follow-count">{{ getTopicFromTopicName.followersCount }}</span>
             <span
               id="follow-count-increment"
               style="display: none;"
-            >{{ apolloData.getTopicFromTopicName.followersCount + 1 }}</span>
+            >{{ getTopicFromTopicName.followersCount + 1 }}</span>
             <span
               id="follow-count-decrement"
               style="display: none;"
-            >{{ apolloData.getTopicFromTopicName.followersCount - 1 }}</span>
+            >{{ getTopicFromTopicName.followersCount - 1 }}</span>
             <span>Following</span>
           </v-list-item-subtitle>
         </span>
@@ -44,14 +41,14 @@
         class="font-weight-regular topic-description"
         style="font-size: 18px;"
       >
-        {{ apolloData.getTopicFromTopicName.description }}
+        {{ getTopicFromTopicName.description }}
       </h3>
     </div>
     <v-divider />
     <div class="posts-grid-container">
-      <div v-for="post in apolloData.getTopicFromTopicName.posts" :key="post.id" class="ma-0 pa-0">
+      <div v-for="post in getAllPostsOnTopic" :key="post.id" class="ma-0 pa-0">
         <post-card
-          :post-topic-name="apolloData.getTopicFromTopicName.name"
+          :post-topic-name="post.topic.name"
           :post-id="post.id"
           :post-title="post.title"
           :post-caption="post.caption"
@@ -71,50 +68,55 @@ export default {
   components: {
     PostCard
   },
-  async asyncData ({ app, params, store, error }) {
+  async asyncData ({ req, app, params, error }) {
     try {
-      if (store.state.currentUser != null) {
-        const apolloData = await app.$topicContainerViewModel.getTopicContainerData(
-          store.state.currentUser.uid,
-          params.topicName
-        )
+      const topicName = await params.topicName
 
-        if (
-          apolloData &&
-          apolloData.data &&
-          !apolloData.errors &&
-          apolloData.data.getTopicFromTopicName != null
-        ) {
-          return { apolloData: apolloData.data }
-        } else {
-          error({ statusCode: 404, message: 'Topic not found' })
+      const getTopicFromTopicName = await app.$topicContainerViewModel.getTopicFromTopicName(
+        topicName
+      )
+
+      const getAllPostsOnTopic = await app.$topicContainerViewModel.getAllPostsOnTopic(
+        topicName
+      )
+
+      let checkIfTopicIsFollowedByUser = false
+
+      if (app.$cookies.get('currentUser') && app.$cookies.get('currentUser') !== null) {
+        const currentUser = await app.$cookies.get('currentUser')
+        checkIfTopicIsFollowedByUser = await app.$topicContainerViewModel.checkIfTopicIsFollowedByUser(currentUser.uid, topicName)
+      }
+
+      if (
+        getTopicFromTopicName &&
+        getAllPostsOnTopic &&
+        getTopicFromTopicName !== null
+      ) {
+        return {
+          getTopicFromTopicName,
+          getAllPostsOnTopic,
+          checkIfTopicIsFollowedByUser
         }
       } else {
-        const apolloData = await app.$topicContainerViewModel.getTopicContainerDataWithoutUser(
-          params.topicName
+        throw new Error(
+          'Some error occurred while fetching topic container data'
         )
-
-        if (apolloData && apolloData.data) {
-          return { apolloData: apolloData.data }
-        } else {
-          throw new Error('Some error occurred in apolloData')
-        }
       }
-    } catch (errorObj) {
+    } catch (err) {
       // eslint-disable-next-line
-      console.log(errorObj)
+      console.log(err);
       error({ statusCode: 404, message: '404 Not Found' })
     }
   },
   computed: {
     getTopicName () {
-      return this.apolloData.getTopicFromTopicName.name
+      return this.getTopicFromTopicName.name
         .match(/[A-Z][a-z]+|[0-9]+/g)
         .join(' ')
     }
   },
   async mounted () {
-    const followed = await this.apolloData.checkIfTopicIsFollowedByUser
+    const followed = await this.checkIfTopicIsFollowedByUser
     const followBtn = document.getElementById('follow-btn')
     const unfollowBtn = document.getElementById('unfollow-btn')
 
@@ -131,12 +133,12 @@ export default {
           this.$cookies.get('currentUser') &&
           this.$cookies.get('currentUser').uid != null
         ) {
-          const response = await this.$topicContainerViewModel.followTopic(
+          const followTopic = await this.$topicContainerViewModel.followTopic(
             this.$cookies.get('currentUser').uid,
             this.$route.params.topicName
           )
 
-          if (!response.data) {
+          if (!followTopic || followTopic === null) {
             throw new Error('Some error occurred while following topic')
           }
 
@@ -154,7 +156,7 @@ export default {
             'follow-count-decrement'
           )
 
-          if (!this.apolloData.checkIfTopicIsFollowedByUser) {
+          if (!this.checkIfTopicIsFollowedByUser) {
             followCount.style = 'display: none;'
             followCountIncrement.style = 'display: initial;'
             followCountDecrement.style = 'display: none;'
@@ -177,12 +179,12 @@ export default {
           this.$cookies.get('currentUser') &&
           this.$cookies.get('currentUser').uid != null
         ) {
-          const response = await this.$topicContainerViewModel.unfollowTopic(
+          const unfollowTopic = await this.$topicContainerViewModel.unfollowTopic(
             this.$cookies.get('currentUser').uid,
             this.$route.params.topicName
           )
 
-          if (!response.data) {
+          if (!unfollowTopic || unfollowTopic === null) {
             throw new Error('Some error occurred while unfollowing topic')
           }
 
@@ -200,7 +202,7 @@ export default {
             'follow-count-decrement'
           )
 
-          if (this.apolloData.checkIfTopicIsFollowedByUser) {
+          if (this.checkIfTopicIsFollowedByUser) {
             followCount.style = 'display: none;'
             followCountIncrement.style = 'display: none;'
             followCountDecrement.style = 'display: initial;'
@@ -220,14 +222,14 @@ export default {
   },
   head () {
     return {
-      title: this.apolloData.getTopicFromTopicName.name
+      title: this.getTopicFromTopicName.name
         .match(/[A-Z][a-z]+|[0-9]+/g)
         .join(' '),
       meta: [
         {
           hid: 'description',
           name: 'description',
-          content: this.apolloData.getTopicFromTopicName.description
+          content: this.getTopicFromTopicName.description
         }
       ]
     }

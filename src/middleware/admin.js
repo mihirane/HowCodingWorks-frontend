@@ -3,7 +3,7 @@ import firebase from 'firebase/app'
 
 export default async function ({ app, store, error }) {
   try {
-    if (store.state.currentUser != null) {
+    if (app.$cookies.get('currentUser') !== null) {
       const response = await axios.post(app.$env.adminClaimsEndpoint, {
         uid: app.$cookies.get('currentUser').uid
       })

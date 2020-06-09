@@ -38,7 +38,7 @@
           </v-toolbar-title>
           <v-spacer />
           <v-toolbar-items>
-            <v-btn text dark :disabled="!valid" color="primary" @click="publishPost()">
+            <v-btn text dark :disabled="!valid" color="primary" @click="createPost()">
               Publish
             </v-btn>
           </v-toolbar-items>
@@ -47,7 +47,7 @@
           <v-form ref="publishPostForm" v-model="valid">
             <v-select
               v-model="postTopicName"
-              :items="allTopics"
+              :items="getAllTopics"
               label="Select a topic"
               hint="Select a suitable topic for your post."
               :rules="postTopicRules"
@@ -82,25 +82,24 @@ export default {
   },
   async asyncData ({ app, error }) {
     try {
-      const apolloData = await app.$postEditorViewModel.getAllTopics()
+      const getAllTopics = await app.$postEditorViewModel.getAllTopics()
 
-      if (apolloData && apolloData.data && !apolloData.errors) {
-        const topicNames = await apolloData.data.getAllTopics
-
-        topicNames.forEach((topic, index) => {
-          topicNames[index] = {
+      if (getAllTopics && getAllTopics !== null) {
+        await getAllTopics.forEach(async (topic, index) => {
+          getAllTopics[index] = await {
             text: topic.name.match(/[A-Z][a-z]+|[0-9]+/g).join(' '),
             value: topic.name
           }
         })
 
-        return { allTopics: topicNames }
+        return { getAllTopics }
       } else {
-        error({ statusCode: 404, message: 'Topic not found' })
+        throw new Error('Some error occurred while fetching all topics')
       }
-    } catch (errorObj) {
+    } catch (err) {
       // eslint-disable-next-line
-      console.log(errorObj);
+      console.log(err)
+      error({ statusCode: 404, message: 'Topic not found' })
     }
   },
   data () {
@@ -144,24 +143,26 @@ export default {
     autosize(document.getElementById('post-title-input'))
   },
   methods: {
-    async publishPost () {
+    async createPost () {
       try {
         const postDescription = JSON.stringify(await this.editor.save())
-        const apolloData = await this.$postEditorViewModel.publishPost(
-          this.postTopicName,
-          this.postTitle,
-          this.postCaption,
-          postDescription
+        const createPost = await this.$postEditorViewModel.createPost(
+          {
+            topicName: this.postTopicName,
+            title: this.postTitle,
+            caption: this.postCaption,
+            description: postDescription
+          }
         )
 
-        if (apolloData && apolloData.data && !apolloData.errors) {
+        if (createPost && createPost !== null) {
           return this.$router.push('/')
         } else {
           throw new Error('Some error occurred while creating post')
         }
-      } catch (error) {
+      } catch (err) {
         // eslint-disable-next-line
-        console.log(error);
+        console.log(err)
       }
     },
     createEditorInstance () {

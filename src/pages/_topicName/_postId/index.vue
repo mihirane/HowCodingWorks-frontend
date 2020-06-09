@@ -2,7 +2,7 @@
   <div class="ma-0 pa-0">
     <div class="mb-4">
       <h1 class="font-weight-bold blog-title-font">
-        {{ apolloData.getPostFromId.title }}
+        {{ getPostFromId.title }}
       </h1>
       <div class="subtitle-1 font-weight-regular pt-3">
         {{ getDate }}
@@ -10,10 +10,10 @@
     </div>
     <topic-card
       class="pl-0 mb-10"
-      :topic-name="apolloData.getTopicFromTopicName.name"
-      :topic-thumbnail-link="apolloData.getTopicFromTopicName.thumbnailLink"
-      :topic-followers-count="apolloData.getTopicFromTopicName.followersCount"
-      :has-user-followed-topic="checkIfTopicIsFollowedByUser()"
+      :topic-name="getTopicFromTopicName.name"
+      :topic-thumbnail-link="getTopicFromTopicName.thumbnailLink"
+      :topic-followers-count="getTopicFromTopicName.followersCount"
+      :has-user-followed-topic="checkIfTopicIsFollowedByUser"
     />
     <!-- eslint-disable-next-line -->
     <div style="font-size: 20px;" class="font-weight-regular" v-html="getPostDescription" />
@@ -29,9 +29,9 @@
         <v-btn id="dislike-btn" color="accent" icon @click="dislikePost()">
           <v-icon>favorite</v-icon>
         </v-btn>
-        <span id="like-count" class="ml-2 body-1">{{ apolloData.getLikesCountOnPost }}</span>
-        <span id="like-count-increment" class="ml-2 body-1">{{ apolloData.getLikesCountOnPost + 1 }}</span>
-        <span id="like-count-decrement" class="ml-2 body-1">{{ apolloData.getLikesCountOnPost - 1 }}</span>
+        <span id="like-count" class="ml-2 body-1">{{ getPostFromId.likesCount }}</span>
+        <span id="like-count-increment" class="ml-2 body-1">{{ getPostFromId.likesCount + 1 }}</span>
+        <span id="like-count-decrement" class="ml-2 body-1">{{ getPostFromId.likesCount - 1 }}</span>
       </div>
 
       <!-- Save Button -->
@@ -42,15 +42,9 @@
         <v-btn id="unsave-btn" color="primary" icon @click="unsavePost()">
           <v-icon>bookmark</v-icon>
         </v-btn>
-        <span id="saved-count" class="ml-2 body-1">{{ apolloData.getSavedCountOnPost }}</span>
-        <span
-          id="saved-count-increment"
-          class="ml-2 body-1"
-        >{{ apolloData.getSavedCountOnPost + 1 }}</span>
-        <span
-          id="saved-count-decrement"
-          class="ml-2 body-1"
-        >{{ apolloData.getSavedCountOnPost - 1 }}</span>
+        <span id="saved-count" class="ml-2 body-1">{{ getPostFromId.savedCount }}</span>
+        <span id="saved-count-increment" class="ml-2 body-1">{{ getPostFromId.savedCount + 1 }}</span>
+        <span id="saved-count-decrement" class="ml-2 body-1">{{ getPostFromId.savedCount - 1 }}</span>
       </div>
 
       <!-- Share Button -->
@@ -78,38 +72,54 @@ export default {
   components: {
     TopicCard
   },
-  async asyncData ({ app, params, store, error }) {
+  async asyncData ({ app, params, error }) {
     try {
       const topicName = params.topicName
       const postId = params.postId.split('--')[1]
 
-      if (store.state.currentUser != null) {
-        const apolloData = await app.$blogPostViewModel.getBlogPostData(
-          store.state.currentUser.uid,
-          topicName,
+      const getPostFromId = await app.$blogPostViewModel.getPostFromId(postId)
+      const getTopicFromTopicName = await app.$blogPostViewModel.getTopicFromTopicName(
+        topicName
+      )
+
+      let checkIfTopicIsFollowedByUser = false
+      let checkIfPostIsLikedByUser = false
+      let checkIfPostIsSavedByUser = false
+
+      if (app.$cookies.get('currentUser') && app.$cookies.get('currentUser') !== null) {
+        const currentUser = await app.$cookies.get('currentUser')
+
+        checkIfTopicIsFollowedByUser = await app.$blogPostViewModel.checkIfTopicIsFollowedByUser(
+          currentUser.uid,
+          topicName
+        )
+        checkIfPostIsLikedByUser = await app.$blogPostViewModel.checkIfPostIsLikedByUser(
+          currentUser.uid,
           postId
         )
-
-        if (apolloData && apolloData.data && !apolloData.errors) {
-          return { apolloData: apolloData.data }
-        } else {
-          error({ statusCode: 404, message: 'Post not found' })
-        }
-      } else {
-        const apolloData = await app.$blogPostViewModel.getBlogPostDataWithoutUser(
-          topicName,
+        checkIfPostIsSavedByUser = await app.$blogPostViewModel.checkIfPostIsSavedByUser(
+          currentUser.uid,
           postId
         )
+      }
 
-        if (apolloData && apolloData.data && !apolloData.errors) {
-          return { apolloData: apolloData.data }
-        } else {
-          error({ statusCode: 404, message: 'Post not found' })
+      if (
+        getPostFromId &&
+        getPostFromId !== null &&
+        getTopicFromTopicName &&
+        getTopicFromTopicName !== null
+      ) {
+        return {
+          getPostFromId,
+          getTopicFromTopicName,
+          checkIfTopicIsFollowedByUser,
+          checkIfPostIsLikedByUser,
+          checkIfPostIsSavedByUser
         }
       }
-    } catch (errorObj) {
+    } catch (err) {
       // eslint-disable-next-line
-      console.log(errorObj)
+      console.log(err);
       error({ statusCode: 404, message: '404 Not Found' })
     }
   },
@@ -120,22 +130,20 @@ export default {
   },
   computed: {
     getDate () {
-      const dateObj = new Date(
-        parseInt(this.apolloData.getPostFromId.creationTime)
-      )
+      const dateObj = new Date(this.getPostFromId.creationTime)
       const month = dateObj.toLocaleString('default', { month: 'long' })
       const date = dateObj.getDate()
       const year = dateObj.getFullYear()
       return `${month} ${date}, ${year}`
     },
     getTopicName () {
-      return this.apolloData.getTopicFromTopicName.name
+      return this.getTopicFromTopicName.name
         .match(/[A-Z][a-z]+|[0-9]+/g)
         .join(' ')
     },
     getPostDescription () {
       return this.$createBlogPost(
-        JSON.parse(this.apolloData.getPostFromId.description).blocks
+        JSON.parse(this.getPostFromId.description).blocks
       )
     }
   },
@@ -145,13 +153,13 @@ export default {
     const saveBtn = document.getElementById('save-btn')
     const unsaveBtn = document.getElementById('unsave-btn')
 
-    if (!this.apolloData.checkIfPostIsLikedByUser) {
+    if (!this.checkIfPostIsLikedByUser) {
       likeBtn.style = 'display: initial;'
     } else {
       dislikeBtn.style = 'display: initial;'
     }
 
-    if (!this.apolloData.checkIfPostIsSavedByUser) {
+    if (!this.checkIfPostIsSavedByUser) {
       saveBtn.style = 'display: initial;'
     } else {
       unsaveBtn.style = 'display: initial;'
@@ -162,25 +170,18 @@ export default {
       copy(this.$env.baseUrl + this.$route.fullPath)
       this.snackbar = true
     },
-    checkIfTopicIsFollowedByUser () {
-      if (this.apolloData.checkIfTopicIsFollowedByUser) {
-        return this.apolloData.checkIfTopicIsFollowedByUser
-      } else {
-        return false
-      }
-    },
     async likePost () {
       try {
         if (
           this.$cookies.get('currentUser') &&
           this.$cookies.get('currentUser').uid != null
         ) {
-          const response = await this.$blogPostViewModel.likePost(
+          const likePost = await this.$blogPostViewModel.likePost(
             this.$cookies.get('currentUser').uid,
             this.$route.params.postId.split('--')[1]
           )
 
-          if (!response.data) {
+          if (!likePost) {
             throw new Error('Some error occurred while liking post')
           }
 
@@ -198,7 +199,7 @@ export default {
             'like-count-decrement'
           )
 
-          if (!this.apolloData.checkIfPostIsLikedByUser) {
+          if (!this.checkIfPostIsLikedByUser) {
             likeCount.style = 'display: none;'
             likeCountIncrement.style = 'display: initial;'
             likeCountDecrement.style = 'display: none;'
@@ -221,12 +222,12 @@ export default {
           this.$cookies.get('currentUser') &&
           this.$cookies.get('currentUser').uid != null
         ) {
-          const response = await this.$blogPostViewModel.dislikePost(
+          const dislikePost = await this.$blogPostViewModel.dislikePost(
             this.$cookies.get('currentUser').uid,
             this.$route.params.postId.split('--')[1]
           )
 
-          if (!response.data) {
+          if (!dislikePost) {
             throw new Error('Some error occurred while disliking post')
           }
 
@@ -244,7 +245,7 @@ export default {
             'like-count-decrement'
           )
 
-          if (this.apolloData.checkIfPostIsLikedByUser) {
+          if (this.checkIfPostIsLikedByUser) {
             likeCount.style = 'display: none;'
             likeCountIncrement.style = 'display: none;'
             likeCountDecrement.style = 'display: initial;'
@@ -267,12 +268,12 @@ export default {
           this.$cookies.get('currentUser') &&
           this.$cookies.get('currentUser').uid != null
         ) {
-          const response = await this.$blogPostViewModel.savePost(
+          const savePost = await this.$blogPostViewModel.savePost(
             this.$cookies.get('currentUser').uid,
             this.$route.params.postId.split('--')[1]
           )
 
-          if (!response.data) {
+          if (!savePost) {
             throw new Error('Some error occurred while saving post')
           }
 
@@ -290,7 +291,7 @@ export default {
             'saved-count-decrement'
           )
 
-          if (!this.apolloData.checkIfPostIsSavedByUser) {
+          if (!this.checkIfPostIsSavedByUser) {
             savedCount.style = 'display: none;'
             savedCountIncrement.style = 'display: initial;'
             savedCountDecrement.style = 'display: none;'
@@ -313,12 +314,12 @@ export default {
           this.$cookies.get('currentUser') &&
           this.$cookies.get('currentUser').uid != null
         ) {
-          const response = await this.$blogPostViewModel.unsavePost(
+          const unsavePost = await this.$blogPostViewModel.unsavePost(
             this.$cookies.get('currentUser').uid,
             this.$route.params.postId.split('--')[1]
           )
 
-          if (!response.data) {
+          if (!unsavePost) {
             throw new Error('Some error occurred while unsaving post')
           }
 
@@ -336,7 +337,7 @@ export default {
             'saved-count-decrement'
           )
 
-          if (this.apolloData.checkIfPostIsSavedByUser) {
+          if (this.checkIfPostIsSavedByUser) {
             savedCount.style = 'display: none;'
             savedCountIncrement.style = 'display: none;'
             savedCountDecrement.style = 'display: initial;'
@@ -356,20 +357,20 @@ export default {
   },
   head () {
     return {
-      title: this.apolloData.getPostFromId.title,
+      title: this.getPostFromId.title,
       meta: [
         {
           hid: 'description',
           name: 'description',
-          content: this.apolloData.getPostFromId.caption
+          content: this.getPostFromId.caption
         },
         {
           property: 'og:title',
-          content: this.apolloData.getPostFromId.title
+          content: this.getPostFromId.title
         },
         {
           property: 'og:description',
-          content: this.apolloData.getPostFromId.caption
+          content: this.getPostFromId.caption
         },
         {
           property: 'og:site_name',

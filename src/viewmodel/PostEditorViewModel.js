@@ -1,68 +1,25 @@
-import axios from 'axios'
-const env = require('~/environment/env')
+import topicModel from './../model/TopicModel'
+import postModel from './../model/PostModel'
 
 class PostEditorViewModel {
   static async getAllTopics () {
-    try {
-      const response = await axios.post(env.graphqlEndpoint, {
-        query: `
-            query GetAllTopics {
-                getAllTopics {
-                    name
-                }
-            }
-        `,
-        operationName: 'GetAllTopics',
-        variables: {}
-      })
-
-      if (response && response.data) {
-        return response.data
-      } else {
-        throw new Error('Some error occurred while following topic')
-      }
-    } catch (error) {
-      // eslint-disable-next-line
-      console.log(error.response.data.errors)
-    }
+    return await topicModel.getAllTopics()
   }
 
-  static async publishPost (
+  static async createPost (
     postTopicName,
     postTitle,
     postCaption,
     postDescription
   ) {
-    try {
-      const response = await axios.post(env.graphqlEndpoint, {
-        query: `
-            mutation CreatePost($postInputVar: PostInput!) {
-                createPost(postInput: $postInputVar) {
-                    id
-                }
-            }
-        `,
-        operationName: 'CreatePost',
-        variables: {
-          postInputVar: {
-            title: postTitle,
-            caption: postCaption,
-            description: postDescription,
-            topicName: postTopicName,
-            published: true
-          }
-        }
-      })
-
-      if (response && response.data) {
-        return response.data
-      } else {
-        throw new Error('Some error occurred while following topic')
+    return await postModel.createPost(
+      {
+        topicName: postTopicName,
+        title: postTitle,
+        caption: postCaption,
+        description: postDescription
       }
-    } catch (error) {
-      // eslint-disable-next-line
-      console.log(error.response.data.errors)
-    }
+    )
   }
 }
 

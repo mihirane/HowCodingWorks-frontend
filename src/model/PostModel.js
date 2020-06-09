@@ -1,10 +1,10 @@
 import firebase from 'firebase/app'
 import 'firebase/firestore'
+import topicModel from './TopicModel'
 const db = firebase.firestore()
-const topicModel = require('./TopicModel')
 const FieldValue = firebase.firestore.FieldValue
 
-class PostService {
+class PostModel {
   static async getAllPosts () {
     try {
       const allPosts = await db.collection('posts').orderBy('creationTime', 'desc').get()
@@ -16,7 +16,10 @@ class PostService {
             title: doc.data().title,
             caption: doc.data().caption,
             description: doc.data().description,
-            creationTime: doc.data().creationTime._seconds * 1000
+            creationTime: doc.data().creationTime.toDate(),
+            topic: await topicModel.getTopicFromTopicName(doc.data().topicName),
+            likesCount: await this.getLikesCountOnPost(doc.id),
+            savedCount: await this.getSavedCountOnPost(doc.id)
           }
         })
 
@@ -48,7 +51,10 @@ class PostService {
               title: doc.data().title,
               caption: doc.data().caption,
               description: doc.data().description,
-              creationTime: doc.data().creationTime._seconds * 1000
+              creationTime: doc.data().creationTime.toDate(),
+              topic: await topicModel.getTopicFromTopicName(doc.data().topicName),
+              likesCount: await this.getLikesCountOnPost(doc.id),
+              savedCount: await this.getSavedCountOnPost(doc.id)
             }
 
             posts.push(post)
@@ -105,7 +111,10 @@ class PostService {
           title: doc.data().title,
           caption: doc.data().caption,
           description: doc.data().description,
-          creationTime: doc.data().creationTime._seconds * 1000
+          creationTime: doc.data().creationTime.toDate(),
+          topic: await topicModel.getTopicFromTopicName(doc.data().topicName),
+          likesCount: await this.getLikesCountOnPost(doc.id),
+          savedCount: await this.getSavedCountOnPost(doc.id)
         }
       } else {
         return new Error(`Post does not exist with id : ${postId}`, 'INVALID_POST_ID')
@@ -133,7 +142,10 @@ class PostService {
           title: postInput.title,
           caption: postInput.caption,
           description: postInput.description,
-          creationTime: FieldValue.serverTimestamp()._seconds * 1000
+          creationTime: FieldValue.serverTimestamp().toDate(),
+          topic: await topicModel.getTopicFromTopicName(postInput.topicName),
+          likesCount: await this.getLikesCountOnPost(postRef.id),
+          savedCount: await this.getSavedCountOnPost(postRef.id)
         }
       } else {
         return new Error('Some error occurred while creating post', 'POST_MUTATION_FAILED')
@@ -228,4 +240,4 @@ class PostService {
   }
 }
 
-module.exports = PostService
+export default PostModel
