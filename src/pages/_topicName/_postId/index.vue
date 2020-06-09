@@ -89,7 +89,6 @@ export default {
 
       if (process.server) {
         currentUser = await req.cookies.currentUser
-        currentUser = await JSON.parse(currentUser)
       }
 
       if (process.client) {

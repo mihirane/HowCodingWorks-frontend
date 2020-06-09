@@ -22,7 +22,7 @@ export default {
         const provider = await new firebase.auth.GoogleAuthProvider()
         const result = await firebase.auth().signInWithPopup(provider)
 
-        if (result.user) {
+        if (result.user && process.client) {
           const idToken = await result.user.getIdToken()
           const response = await axios.post(this.$env.authEndpoint, { id_token: idToken })
 

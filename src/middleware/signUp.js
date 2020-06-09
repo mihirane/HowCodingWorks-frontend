@@ -1,12 +1,12 @@
-export default async function ({ req, app, redirect }) {
+export default function ({ req, app, redirect }) {
   let currentUser
 
   if (process.server) {
-    currentUser = await req.cookies.currentUser
+    currentUser = req.cookies.currentUser
   }
 
   if (process.client) {
-    currentUser = await app.$cookies.get('currentUser')
+    currentUser = app.$cookies.get('currentUser')
   }
 
   if (currentUser && currentUser != null) {
