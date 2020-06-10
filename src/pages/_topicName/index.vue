@@ -68,7 +68,7 @@ export default {
   components: {
     PostCard
   },
-  async asyncData ({ req, app, params, error }) {
+  async asyncData ({ app, params, error }) {
     try {
       const topicName = await params.topicName
 
@@ -82,7 +82,7 @@ export default {
 
       let checkIfTopicIsFollowedByUser = false
 
-      const currentUser = await req.cookies.__session
+      const currentUser = await app.$cookies.__session
 
       if (currentUser && currentUser !== null) {
         checkIfTopicIsFollowedByUser = await app.$topicContainerViewModel.checkIfTopicIsFollowedByUser(

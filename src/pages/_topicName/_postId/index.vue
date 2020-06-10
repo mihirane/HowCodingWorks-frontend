@@ -72,7 +72,7 @@ export default {
   components: {
     TopicCard
   },
-  async asyncData ({ req, app, params, error }) {
+  async asyncData ({ app, params, error }) {
     try {
       const topicName = params.topicName
       const postId = params.postId.split('--')[1]
@@ -86,7 +86,7 @@ export default {
       let checkIfPostIsLikedByUser = false
       let checkIfPostIsSavedByUser = false
 
-      const currentUser = await req.cookies.__session
+      const currentUser = await app.$cookies.__session
 
       if (currentUser && currentUser != null) {
         checkIfTopicIsFollowedByUser = await app.$blogPostViewModel.checkIfTopicIsFollowedByUser(

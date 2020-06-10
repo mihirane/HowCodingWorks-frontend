@@ -51,9 +51,9 @@ export default {
     PostCard,
     TopicCard
   },
-  async asyncData ({ req, app, params, error }) {
+  async asyncData ({ app, params, error }) {
     try {
-      const currentUser = await req.cookies.__session
+      const currentUser = await app.$cookies.__session
 
       if (currentUser && currentUser != null) {
         const getAllFollowedTopicsByUser = await app.$userProfileViewModel.getAllFollowedTopicsByUser(
