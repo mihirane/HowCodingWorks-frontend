@@ -91,6 +91,11 @@ export default {
     return {
       tab: null
     }
+  },
+  head () {
+    return {
+      title: this.currentUser.displayName
+    }
   }
 }
 </script>
