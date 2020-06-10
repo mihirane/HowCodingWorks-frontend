@@ -1,5 +1,5 @@
 <template>
-  <div v-if="currentUser && currentUser !== null" class="ma-0 pa-0">
+  <div class="ma-0 pa-0">
     <div class="d-flex flex-column align-center justify-space-between mb-8">
       <v-avatar class="mb-4" size="80">
         <img :src="currentUser.photoURL" :alt="currentUser.displayName">
@@ -72,7 +72,8 @@ export default {
         ) {
           return {
             getAllFollowedTopicsByUser,
-            getAllSavedPostsByUser
+            getAllSavedPostsByUser,
+            currentUser
           }
         } else {
           throw new Error('some error occurred while getting user data')
@@ -89,18 +90,6 @@ export default {
   data () {
     return {
       tab: null
-    }
-  },
-  computed: {
-    currentUser () {
-      if (
-        this.$cookies.get('__session') &&
-        this.$cookies.get('__session') != null
-      ) {
-        return this.$cookies.get('__session')
-      } else {
-        return null
-      }
     }
   }
 }

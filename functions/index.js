@@ -40,7 +40,7 @@ async function handleRequest(req, res) {
   if (!isReady) {
     await readyPromise;
   }
-  res.set('Cache-Control', 'public, max-age=3000, s-maxage=6000');
+  res.set('Cache-Control', 'public, max-age=1, s-maxage=1');
   await nuxt.render(req, res);
 }
 

@@ -1,7 +1,7 @@
 import axios from 'axios'
 import firebase from 'firebase/app'
 
-export default async function ({ app, store, error }) {
+export default async function ({ app, error }) {
   try {
     if (app.$cookies.get('__session') !== null) {
       const response = await axios.post(app.$env.adminClaimsEndpoint, {
