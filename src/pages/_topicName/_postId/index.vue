@@ -86,7 +86,7 @@ export default {
       let checkIfPostIsLikedByUser = false
       let checkIfPostIsSavedByUser = false
 
-      const currentUser = await app.$cookies.get('__session').currentUser
+      const currentUser = await app.$cookies.get('__session')
 
       if (currentUser && currentUser != null) {
         checkIfTopicIsFollowedByUser = await app.$blogPostViewModel.checkIfTopicIsFollowedByUser(
