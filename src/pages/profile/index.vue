@@ -53,15 +53,7 @@ export default {
   },
   async asyncData ({ req, app, params, error }) {
     try {
-      let currentUser
-
-      if (process.server) {
-        currentUser = await req.cookies.__session
-      }
-
-      if (process.client) {
-        currentUser = await app.$cookies.get('__session')
-      }
+      const currentUser = await req.cookies.__session
 
       if (currentUser && currentUser != null) {
         const getAllFollowedTopicsByUser = await app.$userProfileViewModel.getAllFollowedTopicsByUser(
