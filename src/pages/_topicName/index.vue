@@ -82,7 +82,7 @@ export default {
 
       let checkIfTopicIsFollowedByUser = false
 
-      const currentUser = await app.$cookies.__session
+      const currentUser = await app.$cookies.get('__session')
 
       if (currentUser && currentUser !== null) {
         checkIfTopicIsFollowedByUser = await app.$topicContainerViewModel.checkIfTopicIsFollowedByUser(
