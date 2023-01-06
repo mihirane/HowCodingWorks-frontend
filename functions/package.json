@@ -33,7 +33,7 @@
     "firebase-admin": "^8.12.1",
     "firebase-functions": "^3.6.2",
     "graphql": "^15.0.0",
-    "nuxt": "^2.12.2",
+    "nuxt": "^2.15.8",
     "uuid": "^8.1.0",
     "vue-client-only": "^2.0.0",
     "vue-meta": "^2.3.4"
